@@ -20,14 +20,4 @@ fn android() {
                 .join("libc++_shared.so"),
         )
         .unwrap();
-
-        let lib_path2 = sysroot_libs_path.join("liblogger.so");
-        std::fs::copy(
-            lib_path2,
-            Path::new(&output_path)
-                .join(&env::var("CARGO_NDK_ANDROID_TARGET").unwrap())
-                .join("liblogger.so"),
-        )
-        .unwrap();
-    }
 }

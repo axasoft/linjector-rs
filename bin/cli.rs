@@ -19,6 +19,11 @@ struct Args {
     #[arg(short, long)]
     file: String,
 
+    /// Don't copy the library/shellcode to /data/local/tmp. Instead, 
+    /// try to inject it from the original path.
+    #[arg(long)]
+    dont_copy: bool,
+
     /// type of injection
     #[arg(short, long, value_enum, default_value_t = InjectionType::RawDlopen)]
     injection_type: InjectionType,
@@ -103,6 +108,7 @@ fn main() {
             std::process::exit(1);
         }
     }
+    injector.set_dont_copy(args.dont_copy);
 
     match args.injection_type {
         InjectionType::RawDlopen => {

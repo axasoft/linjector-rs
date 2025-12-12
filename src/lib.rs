@@ -26,6 +26,7 @@ pub struct Injector {
     pid: i32,
     remote_proc: remote_proc::RemoteProc,
     file_path: String,
+    dont_copy: bool,
     injection_type: InjectionType,
     target_func_sym_name: String,
     target_func_sym_addr: usize,
@@ -52,6 +53,7 @@ impl Injector {
             pid,
             remote_proc: remote_proc::RemoteProc::new(pid)?,
             file_path: String::new(),
+            dont_copy: false,
             injection_type: InjectionType::RawDlopen,
             target_func_sym_name: String::new(),
             target_func_sym_addr: 0,
@@ -73,18 +75,25 @@ impl Injector {
         Ok(self)
     }
 
+    pub fn set_dont_copy(&mut self, dont_copy: bool) {
+        self.dont_copy = dont_copy
+    }
+
     fn prepare_file(&self) -> Result<String, InjectionError> {
         if self.injection_type == InjectionType::RawDlopen
             || self.injection_type == InjectionType::MemFdDlopen
         {
             utils::verify_elf_file(self.file_path.as_str())?;
         }
-
-        let tmp_file_path = utils::copy_file_to_tmp(self.file_path.as_str())?;
-        utils::fix_file_context(tmp_file_path.as_str())?;
-        utils::fix_file_permissions(tmp_file_path.as_str())?;
-        utils::print_file_hexdump(tmp_file_path.as_str())?;
-        Ok(tmp_file_path)
+        if self.dont_copy {
+            Ok(self.file_path.clone())
+        } else {
+            let tmp_file_path = utils::copy_file_to_tmp(self.file_path.as_str())?;
+            utils::fix_file_context(tmp_file_path.as_str())?;
+            utils::fix_file_permissions(tmp_file_path.as_str())?;
+            utils::print_file_hexdump(tmp_file_path.as_str())?;
+            Ok(tmp_file_path)
+        }
     }
 
     fn add_sym(&mut self, module_name: &str, sym_name: &str) -> Result<usize, InjectionError> {

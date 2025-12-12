@@ -20,4 +20,5 @@ fn android() {
                 .join("libc++_shared.so"),
         )
         .unwrap();
+    }
 }

@@ -4,6 +4,18 @@ Android port of [linux_injector](https://github.com/namazso/linux_injector). Lib
 
 To get an idea of how it works, you can read the [blog post](https://erfur.github.io/blog/dev/code-injection-without-ptrace).
 
+## Building
+
+Install Cargo-ndk first with 
+```
+cargo install cargo-ndk
+```
+
+and run the build command: 
+```
+cargo ndk -t arm64-v8a build --release
+````
+
 ## Usage
 
 ```
@@ -20,6 +32,10 @@ Options:
 
   -f, --file <FILE>
           path of the library/shellcode to inject
+
+      --dont_copy
+          Don't copy the library/shellcode to /data/local/tmp. Instead, 
+          try to inject it from the original path.
 
   -i, --injection-type <INJECTION_TYPE>
           type of injection
